@@ -1,7 +1,10 @@
-import b0RemoteApi
+import os
 import time
 
+import b0RemoteApi
+
 with b0RemoteApi.RemoteApiClient() as client:
+    os.environ['B0_RESOLVER'] = 'tcp://localhost:22000'
     sc = client.simxServiceCall()
     try:
         client.simxStartSimulation(sc)
