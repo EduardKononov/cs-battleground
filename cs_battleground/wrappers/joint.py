@@ -1,13 +1,17 @@
-from coppelia_sim_connection import client
+from cs_battleground.remote_api.coppelia_sim_connection import client
+
+__all__ = ['Joint']
 
 
 class Joint:
     def __init__(self, joint_name, base_velocity=1):
-        _, joint_handler = client().simxGetObjectHandle(joint_name, client().simxServiceCall())
+        succeed, joint_handler = client().simxGetObjectHandle(joint_name, client().simxServiceCall())
+        if not succeed:
+            raise RuntimeError('Could not get object handle')
         self.handler = joint_handler
 
         self._velocity = None
-        self.base_velocity = base_velocity
+        self.scaler = base_velocity
 
     @property
     def velocity(self):
@@ -15,7 +19,8 @@ class Joint:
 
     @velocity.setter
     def velocity(self, velocity):
-        new_velocity = self.base_velocity * velocity
+        new_velocity = self.scaler * velocity
+
         if self.velocity != new_velocity:
             client().simxSetJointTargetVelocity(self.handler, new_velocity, client().simxDefaultPublisher())
             self._velocity = new_velocity

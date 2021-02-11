@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
 
-from keyboard_handler import KeyboardHandler
+from cs_battleground.keyboard_whatcher import KeyboardWatcher
+
+__all__ = [
+    'RobotController',
+    'start_control_session',
+]
 
 
 class RobotController(ABC):
@@ -53,7 +58,7 @@ def start_control_session(
         's': controller.stop,
         'd': controller.stop,
     }
-    with KeyboardHandler(
+    with KeyboardWatcher(
         {
             **default_movement_press_handlers,
             **(

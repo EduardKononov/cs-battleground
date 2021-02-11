@@ -30,7 +30,7 @@ def infinite_handle_cycle(key_pool, handlers):
         _handle_cycle(key_pool, handlers)
 
 
-class KeyboardHandler:
+class KeyboardWatcher:
     def __init__(self, press_handlers: dict, release_handlers: dict):
         self._pressed = set()
         self._released = set()
@@ -59,11 +59,12 @@ class KeyboardHandler:
         except AttributeError:
             pass
         else:
-            self._pressed.remove(char)
-            self._released.add(char)
+            if char:
+                self._pressed.remove(char)
+                self._released.add(char)
 
-            _handle_cycle(self._released, self._release_handlers)
-            self._released.remove(char)
+                _handle_cycle(self._released, self._release_handlers)
+                self._released.remove(char)
 
     def join(self):
         self._listener.join()
@@ -83,7 +84,7 @@ class KeyboardHandler:
 
 
 def main():
-    with KeyboardHandler(
+    with KeyboardWatcher(
         {
             'w+d': lambda: print('pressed w+d'),
             'w': lambda: print('pressed w!'),

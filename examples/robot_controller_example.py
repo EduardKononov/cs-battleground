@@ -1,8 +1,12 @@
-from coppelia_sim_connection import coppelia_sim_connection
-from robot_controller import RobotController, start_control_session
-from joint import Joint
+from cs_battleground.robot_controller import (
+    RobotController,
+    start_control_session,
+)
+from cs_battleground.remote_api import coppelia_sim_connection
+from cs_battleground.wrappers import Joint
 
 
+# pioneer.ttt
 class PioneerController(RobotController):
     def __init__(self):
         super(PioneerController, self).__init__()
@@ -38,8 +42,8 @@ class PioneerController(RobotController):
         self.right_joint.velocity = -1.5
 
     def set_base_velocity(self, value):
-        self.left_joint.base_velocity = value
-        self.right_joint.base_velocity = value
+        self.left_joint.scaler = value
+        self.right_joint.scaler = value
 
 
 def main():

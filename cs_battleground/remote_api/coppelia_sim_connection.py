@@ -1,9 +1,11 @@
 import os
 from contextlib import contextmanager
 
-import b0RemoteApi
+from cs_battleground.remote_api import b0RemoteApi
 
 _CLIENT = None
+
+__all__ = ['client', 'coppelia_sim_connection']
 
 
 def client() -> b0RemoteApi.RemoteApiClient:

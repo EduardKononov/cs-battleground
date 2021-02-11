@@ -3,11 +3,14 @@
 # and the server counterpart to lua/b0RemoteApiServer.lua
 # -------------------------------------------------------
 
-import b0
-import msgpack
+
+import time
 import random
 import string
-import time
+
+import msgpack
+
+import cs_battleground.remote_api.b0 as b0
 
 
 class RemoteApiClient:
