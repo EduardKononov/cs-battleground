@@ -4,11 +4,16 @@ from keyboard_handler import KeyboardHandler
 
 
 class RobotController(ABC):
-    def _move(self):
+    @abstractmethod
+    def forward(self):
         ...
 
     @abstractmethod
-    def forward(self):
+    def turn_right(self):
+        ...
+
+    @abstractmethod
+    def turn_left(self):
         ...
 
     @abstractmethod
@@ -16,19 +21,11 @@ class RobotController(ABC):
         ...
 
     @abstractmethod
-    def right(self):
+    def backward_turn_right(self):
         ...
 
     @abstractmethod
-    def left(self):
-        ...
-
-    @abstractmethod
-    def backward_right(self):
-        ...
-
-    @abstractmethod
-    def backward_left(self):
+    def backward_turn_left(self):
         ...
 
     @abstractmethod
@@ -42,10 +39,10 @@ def start_control_session(
     additional_release_handlers: dict = None,
 ):
     default_movement_press_handlers = {
-        'w+a': controller.left,
-        'w+d': controller.right,
-        's+a': controller.backward_left,
-        's+d': controller.backward_right,
+        'w+a': controller.turn_left,
+        'w+d': controller.turn_right,
+        's+a': controller.backward_turn_left,
+        's+d': controller.backward_turn_right,
         'w': controller.forward,
         's': controller.backward,
         'd': controller.stop,

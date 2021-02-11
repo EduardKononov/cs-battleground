@@ -21,19 +21,19 @@ class PioneerController(RobotController):
         self.left_joint.velocity = 0
         self.right_joint.velocity = 0
 
-    def right(self):
+    def turn_right(self):
         self.left_joint.velocity = 1.5
         self.right_joint.velocity = 0.5
 
-    def left(self):
+    def turn_left(self):
         self.left_joint.velocity = 0.5
         self.right_joint.velocity = 1.5
 
-    def backward_right(self):
+    def backward_turn_right(self):
         self.left_joint.velocity = -1.5
         self.right_joint.velocity = -0.5
 
-    def backward_left(self):
+    def backward_turn_left(self):
         self.left_joint.velocity = -0.5
         self.right_joint.velocity = -1.5
 
@@ -53,8 +53,7 @@ def main():
             },
             {
                 'k': lambda: controller.set_base_velocity(1),
-            }
-
+            },
         )
 
 
