@@ -1,8 +1,13 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
+
 from cs_battleground.robot_controller import (
     RobotController,
     start_control_session,
 )
-from cs_battleground.remote_api import coppelia_sim_connection
+from cs_battleground.remote_api import coppelia_sim_connection, loaded_robot
 from cs_battleground.wrappers import Joint
 
 
@@ -48,17 +53,18 @@ class PioneerController(RobotController):
 
 def main():
     with coppelia_sim_connection('localhost'):
-        controller = PioneerController()
-        start_control_session(
-            controller,
-            {
-                # speedup
-                'k': lambda: controller.set_base_velocity(3),
-            },
-            {
-                'k': lambda: controller.set_base_velocity(1),
-            },
-        )
+        with loaded_robot('pioneer.ttm'):
+            controller = PioneerController()
+            start_control_session(
+                controller,
+                {
+                    # speedup
+                    'k': lambda: controller.set_base_velocity(3),
+                },
+                {
+                    'k': lambda: controller.set_base_velocity(1),
+                },
+            )
 
 
 if __name__ == '__main__':

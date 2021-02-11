@@ -3,7 +3,7 @@ import struct
 import sys
 import os
 import ctypes as ct
-from simConst import *
+from cs_battleground.remote_api.simConst import *
 
 # load library
 libsimx = None
