@@ -3,11 +3,14 @@
 # and the server counterpart to lua/b0RemoteApiServer.lua
 # -------------------------------------------------------
 
-import b0
-import msgpack
+
+import time
 import random
 import string
-import time
+
+import msgpack
+
+import cs_battleground.remote_api.b0 as b0
 
 
 class RemoteApiClient:
@@ -50,7 +53,7 @@ class RemoteApiClient:
         self._pongReceived = False
         self._handleFunction('Ping', [0], self.simxDefaultSubscriber(self._pingCallback))
         while not self._pongReceived:
-            self.simxSpinOnce();
+            self.simxSpinOnce()
         self._handleFunction('DisconnectClient', [self._clientId], self._serviceCallTopic)
         for key, value in self._allSubscribers.items():
             if value['handle'] != self._defaultSubscriber:
@@ -177,7 +180,7 @@ class RemoteApiClient:
             readData = None
             if (value['handle'] != self._defaultSubscriber) or (not defaultSubscriberAlreadyProcessed):
                 defaultSubscriberAlreadyProcessed = defaultSubscriberAlreadyProcessed or (
-                        value['handle'] == self._defaultSubscriber)
+                    value['handle'] == self._defaultSubscriber)
                 while value['handle'].poll(0):
                     readData = value['handle'].read()
                     if not value['dropMessages']:
@@ -186,7 +189,7 @@ class RemoteApiClient:
                     self._handleReceivedMessage(readData)
 
     def simxGetTimeInMs(self):
-        return self._node.hardware_time_usec() / 1000;
+        return self._node.hardware_time_usec() / 1000
 
     def simxSleep(self, durationInMs):
         time.sleep(durationInMs)
