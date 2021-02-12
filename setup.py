@@ -18,6 +18,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     package_data={
         'cs_battleground.remote_api': ['*.so', '*.dll'],
+        'cs_battleground.init': ['*.ttm', '*.ttt'],
     },
     classifiers=[
         'Programming Language :: Python :: 3',
