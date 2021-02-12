@@ -46,7 +46,7 @@ class PioneerController(RobotController):
         self.left_joint.velocity = -0.5
         self.right_joint.velocity = -1.5
 
-    def set_base_velocity(self, value):
+    def set_scaler(self, value):
         self.left_joint.scaler = value
         self.right_joint.scaler = value
 
@@ -59,10 +59,10 @@ def main():
                 controller,
                 {
                     # speedup
-                    'k': lambda: controller.set_base_velocity(3),
+                    'k': lambda: controller.set_scaler(3),
                 },
                 {
-                    'k': lambda: controller.set_base_velocity(1),
+                    'k': lambda: controller.set_scaler(1),
                 },
             )
 
