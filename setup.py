@@ -16,6 +16,9 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://gitlab.com/ekon-university/8_sem_labs/pis/battleground',
     packages=setuptools.find_packages(),
+    package_data={
+        'cs_battleground.remote_api': ['*.so', '*.dll'],
+    },
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
