@@ -3,12 +3,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
 
-from cs_battleground.robot_controller import (
-    RobotController,
-    start_control_session,
-)
-from cs_battleground.remote_api import coppelia_sim_connection, loaded_robot
 from cs_battleground.wrappers import Joint
+from cs_battleground.remote_api import coppelia_sim_connection, loaded_robot
+from cs_battleground.keyboard_whatcher import KeyHandler
+from cs_battleground.robot_controller import RobotController
 
 
 # pioneer.ttt
@@ -55,16 +53,14 @@ def main():
     with coppelia_sim_connection('localhost'):
         with loaded_robot('pioneer.ttm'):
             controller = PioneerController()
-            start_control_session(
-                controller,
-                {
-                    # speedup
-                    'k': lambda: controller.set_scaler(3),
-                },
-                {
-                    'k': lambda: controller.set_scaler(1),
-                },
+            speedup = KeyHandler(
+                key='k',
+                press=lambda: controller.set_scaler(3),
+                release=lambda: controller.set_scaler(1),
             )
+            controller.start_control_session([
+                speedup,
+            ])
 
 
 if __name__ == '__main__':

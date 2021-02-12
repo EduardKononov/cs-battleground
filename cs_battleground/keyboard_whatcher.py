@@ -1,8 +1,14 @@
 import time
 from threading import Thread
 from functools import partial
+from typing import NamedTuple, Callable, Optional, Sequence
 
-from pynput.keyboard import Listener, KeyCode
+from pynput.keyboard import Listener, KeyCode, Key
+
+__all__ = [
+    'KeyHandler',
+    'KeyboardWatcher',
+]
 
 
 def _handle_cycle(key_pool, handlers):
@@ -30,41 +36,62 @@ def infinite_handle_cycle(key_pool, handlers):
         _handle_cycle(key_pool, handlers)
 
 
+class KeyHandler(NamedTuple):
+    key: str
+    press: Optional[Callable] = None
+    release: Optional[Callable] = None
+
+
 class KeyboardWatcher:
-    def __init__(self, press_handlers: dict, release_handlers: dict):
+    def __init__(self, key_handlers: Sequence):
         self._pressed = set()
         self._released = set()
 
-        self._press_handlers = press_handlers
-        self._release_handlers = release_handlers
+        self._press_handlers = {}
+        self._release_handlers = {}
+        for key, press, release in key_handlers:
+            if press:
+                self._press_handlers[key] = press
+            if release:
+                self._release_handlers[key] = release
 
         self._listener = None
 
-        target = partial(infinite_handle_cycle, key_pool=self._pressed, handlers=press_handlers)
+        target = partial(infinite_handle_cycle, key_pool=self._pressed, handlers=self._press_handlers)
         thread = Thread(target=target, daemon=True)
         thread.start()
 
-    def handle_press(self, key: KeyCode):
-        try:
-            char = key.char
-        except AttributeError:
-            pass
+    @staticmethod
+    def _get_pressed_key(key: KeyCode):
+        if isinstance(key, KeyCode):
+            key_name = key.char
+        elif isinstance(key, Key):
+            key_name = key.name
         else:
-            if char:
-                self._pressed.add(char)
+            raise ValueError
+
+        try:
+            key_name = key_name.lower()
+        except AttributeError:
+            return None
+
+        return key_name
+
+    def handle_press(self, key: KeyCode):
+        key_name = self._get_pressed_key(key)
+
+        if key_name:
+            self._pressed.add(key_name)
 
     def handle_release(self, key: KeyCode):
-        try:
-            char = key.char
-        except AttributeError:
-            pass
-        else:
-            if char:
-                self._pressed.remove(char)
-                self._released.add(char)
+        key_name = self._get_pressed_key(key)
 
-                _handle_cycle(self._released, self._release_handlers)
-                self._released.remove(char)
+        if key_name in self._pressed:
+            self._pressed.remove(key_name)
+            self._released.add(key_name)
+
+            _handle_cycle(self._released, self._release_handlers)
+            self._released.remove(key_name)
 
     def join(self):
         self._listener.join()
@@ -84,16 +111,17 @@ class KeyboardWatcher:
 
 
 def main():
-    with KeyboardWatcher(
-        {
-            'w+d': lambda: print('pressed w+d'),
-            'w': lambda: print('pressed w!'),
-        },
-        {
-            'w': lambda: print('r w'),
-            'd': lambda: print('r d'),
-        },
-    ) as handler:
+    wd = KeyHandler(
+        key='w+d',
+        press=lambda: print('pressed w+d'),
+        release=lambda: print('released w+d'),
+    )
+    w = KeyHandler(
+        key='w',
+        press=lambda: print('pressed w'),
+        release=lambda: print('released w'),
+    )
+    with KeyboardWatcher([wd, w]) as handler:
         handler.join()
 
 

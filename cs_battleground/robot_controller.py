@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import Sequence, Optional
 
-from cs_battleground.keyboard_whatcher import KeyboardWatcher
+from cs_battleground.keyboard_whatcher import KeyboardWatcher, KeyHandler
 
-__all__ = [
-    'RobotController',
-    'start_control_session',
-]
+__all__ = ['RobotController']
 
 
 class RobotController(ABC):
@@ -37,43 +35,24 @@ class RobotController(ABC):
     def stop(self):
         ...
 
+    def start_control_session(
+        self,
+        key_handlers: Optional[Sequence[KeyHandler]] = None,
+    ):
+        with KeyboardWatcher([
+            KeyHandler('w+a', press=self.turn_left),
+            KeyHandler('w+d', press=self.turn_right),
+            KeyHandler('s+a', press=self.backward_turn_left),
+            KeyHandler('s+d', press=self.backward_turn_right),
+            KeyHandler('w', press=self.forward, release=self.stop),
+            KeyHandler('a', press=None, release=self.stop),
+            KeyHandler('s', press=self.backward, release=self.stop),
+            KeyHandler('d', press=None, release=self.stop),
 
-def start_control_session(
-    controller: RobotController,
-    additional_press_handlers: dict = None,
-    additional_release_handlers: dict = None,
-):
-    default_movement_press_handlers = {
-        'w+a': controller.turn_left,
-        'w+d': controller.turn_right,
-        's+a': controller.backward_turn_left,
-        's+d': controller.backward_turn_right,
-        'w': controller.forward,
-        's': controller.backward,
-        'd': controller.stop,
-    }
-    default_movement_release_handlers = {
-        'w': controller.stop,
-        'a': controller.stop,
-        's': controller.stop,
-        'd': controller.stop,
-    }
-    with KeyboardWatcher(
-        {
-            **default_movement_press_handlers,
-            **(
-                additional_press_handlers
-                if additional_press_handlers
-                else {}
+            *(
+                key_handlers
+                if key_handlers
+                else ()
             )
-        },
-        {
-            **default_movement_release_handlers,
-            **(
-                additional_release_handlers
-                if additional_release_handlers
-                else {}
-            )
-        },
-    ) as handler:
-        handler.join()
+        ]) as handler:
+            handler.join()
