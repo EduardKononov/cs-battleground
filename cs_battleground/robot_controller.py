@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Sequence, Optional
 
-from cs_battleground.keyboard_whatcher import KeyboardWatcher, KeyHandler
+from cs_battleground.keyboard_whatcher import KeyboardWatcher, KeyDescriptor
 
 __all__ = ['RobotController']
 
@@ -37,17 +37,17 @@ class RobotController(ABC):
 
     def start_control_session(
         self,
-        key_handlers: Optional[Sequence[KeyHandler]] = None,
+        key_handlers: Optional[Sequence[KeyDescriptor]] = None,
     ):
         with KeyboardWatcher([
-            KeyHandler('w+a', press=self.turn_left),
-            KeyHandler('w+d', press=self.turn_right),
-            KeyHandler('s+a', press=self.backward_turn_left),
-            KeyHandler('s+d', press=self.backward_turn_right),
-            KeyHandler('w', press=self.forward, release=self.stop),
-            KeyHandler('a', press=None, release=self.stop),
-            KeyHandler('s', press=self.backward, release=self.stop),
-            KeyHandler('d', press=None, release=self.stop),
+            KeyDescriptor('w+a', press=self.turn_left),
+            KeyDescriptor('w+d', press=self.turn_right),
+            KeyDescriptor('s+a', press=self.backward_turn_left),
+            KeyDescriptor('s+d', press=self.backward_turn_right),
+            KeyDescriptor('w', press=self.forward, release=self.stop),
+            KeyDescriptor('a', press=None, release=self.stop),
+            KeyDescriptor('s', press=self.backward, release=self.stop),
+            KeyDescriptor('d', press=None, release=self.stop),
 
             *(
                 key_handlers

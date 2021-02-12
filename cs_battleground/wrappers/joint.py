@@ -5,6 +5,12 @@ __all__ = ['Joint']
 
 class Joint:
     def __init__(self, joint_name, scaler=1):
+        """
+        Обертка над объектом joint для упрощения базовых операций
+
+        :param joint_name: имя joint'а (прямо из CoppeliaSim)
+        :param scaler: значение, на которое умножается каждое выставляемое velocity
+        """
         joint_handler = client().simxGetObjectHandle(joint_name, client().simxServiceCall())
 
         self.handler = joint_handler

@@ -6,7 +6,7 @@ from typing import NamedTuple, Callable, Optional, Sequence
 from pynput.keyboard import Listener, KeyCode, Key
 
 __all__ = [
-    'KeyHandler',
+    'KeyDescriptor',
     'KeyboardWatcher',
 ]
 
@@ -36,9 +36,13 @@ def infinite_handle_cycle(key_pool, handlers):
         _handle_cycle(key_pool, handlers)
 
 
-class KeyHandler(NamedTuple):
+class KeyDescriptor(NamedTuple):
+    # какую кнопку/комбинацию нужно нажать, чтобы спровоцировать действие
+    # Примеры: 'w', 'w+a'
     key: str
+    # действие на нажатие кнопки
     press: Optional[Callable] = None
+    # действие на отжатие кнопки
     release: Optional[Callable] = None
 
 
@@ -111,12 +115,12 @@ class KeyboardWatcher:
 
 
 def main():
-    wd = KeyHandler(
+    wd = KeyDescriptor(
         key='w+d',
         press=lambda: print('pressed w+d'),
         release=lambda: print('released w+d'),
     )
-    w = KeyHandler(
+    w = KeyDescriptor(
         key='w',
         press=lambda: print('pressed w'),
         release=lambda: print('released w'),
