@@ -7,12 +7,44 @@
 import time
 import random
 import string
+from functools import wraps
 
 import msgpack
 
 import cs_battleground.remote_api.b0 as b0
 
+__all__ = ['RemoteApiClient']
 
+
+def raise_on_communication_error(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        result = func(*args, **kwargs)
+        if (
+            isinstance(result, list) and
+            isinstance(result[0], bool)
+        ):
+            if result[0]:
+                result = result[1:]
+                if len(result) == 1:
+                    return result[0]
+            else:
+                raise RuntimeError('Communication with Coppelia has failed')
+
+        return result
+
+    return inner
+
+
+def raises_on_communication_errors(cls):
+    for key, val in vars(cls).items():
+        if key.startswith('simx'):
+            setattr(cls, key, raise_on_communication_error(val))
+
+    return cls
+
+
+@raises_on_communication_errors
 class RemoteApiClient:
     def __init__(self, nodeName='b0RemoteApi_pythonClient', channelName='b0RemoteApi', inactivityToleranceInSec=60,
                  setupSubscribersAsynchronously=False, timeout=3):

@@ -5,9 +5,7 @@ __all__ = ['Joint']
 
 class Joint:
     def __init__(self, joint_name, scaler=1):
-        succeed, joint_handler = client().simxGetObjectHandle(joint_name, client().simxServiceCall())
-        if not succeed:
-            raise RuntimeError('Could not get object handle')
+        joint_handler = client().simxGetObjectHandle(joint_name, client().simxServiceCall())
 
         self.handler = joint_handler
 
