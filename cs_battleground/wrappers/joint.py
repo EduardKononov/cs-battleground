@@ -4,14 +4,15 @@ __all__ = ['Joint']
 
 
 class Joint:
-    def __init__(self, joint_name, base_velocity=1):
+    def __init__(self, joint_name, scaler=1):
         succeed, joint_handler = client().simxGetObjectHandle(joint_name, client().simxServiceCall())
         if not succeed:
             raise RuntimeError('Could not get object handle')
+
         self.handler = joint_handler
 
-        self._velocity = None
-        self.scaler = base_velocity
+        self._velocity = client().simxGetJointTargetVelocity(self.handler, client().simxServiceCall())
+        self.scaler = scaler
 
     @property
     def velocity(self):
