@@ -21,4 +21,9 @@ def coppelia_sim_connection(ip):
         os.environ['B0_RESOLVER'] = f'tcp://{ip}:22000'
         global _CLIENT
         _CLIENT = client
-        yield client
+
+        try:
+            yield client
+        except KeyboardInterrupt:
+            print('\n\nSIMULATION HAS BEEN STOPPED BY USER\n\n')
+            exit(0)
