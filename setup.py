@@ -17,7 +17,7 @@ setuptools.setup(
     url='https://gitlab.com/ekon-university/8_sem_labs/pis/battleground',
     packages=setuptools.find_packages(),
     package_data={
-        'cs_battleground.remote_api': ['*.so', '*.dll'],
+        'cs_battleground.remote_api': ['bin/*.so', 'bin/*.dll'],
         'cs_battleground.init': ['*.ttm', '*.ttt'],
     },
     classifiers=[
