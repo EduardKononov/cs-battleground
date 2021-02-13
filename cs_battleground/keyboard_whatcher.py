@@ -53,7 +53,9 @@ class KeyboardWatcher:
 
         self._press_handlers = {}
         self._release_handlers = {}
-        for key, press, release in key_handlers:
+
+        sorted_key_handlers = sorted(key_handlers, key=lambda x: len(x.key), reverse=True)
+        for key, press, release in sorted_key_handlers:
             if press:
                 self._press_handlers[key] = press
             if release:
