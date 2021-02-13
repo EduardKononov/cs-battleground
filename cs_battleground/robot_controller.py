@@ -43,43 +43,35 @@ class RobotController(ABC):
             KeyHandler(
                 'w+a',
                 press=self.turn_left,
-                repeat_on_hold=True,
             ),
             KeyHandler(
                 'w+d',
                 press=self.turn_right,
-                repeat_on_hold=True,
             ),
             KeyHandler(
                 's+a',
                 press=self.backward_turn_left,
-                repeat_on_hold=True,
             ),
             KeyHandler(
                 's+d',
                 press=self.backward_turn_right,
-                repeat_on_hold=True,
             ),
             KeyHandler(
                 'w',
                 press=self.forward,
                 release=self.stop,
-                repeat_on_hold=True,
             ),
             KeyHandler(
                 'a',
                 release=self.stop,
-                repeat_on_hold=True,
             ),
             KeyHandler(
                 's', press=self.backward,
                 release=self.stop,
-                repeat_on_hold=True,
             ),
             KeyHandler(
                 'd',
                 release=self.stop,
-                repeat_on_hold=True,
             ),
 
             *(

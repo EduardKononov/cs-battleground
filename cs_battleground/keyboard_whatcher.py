@@ -41,15 +41,9 @@ class KeyHandler:
     press: Optional[Callable] = None
     # действие на отжатие кнопки
     release: Optional[Callable] = None
-    repeat_on_hold: bool = False
 
     def __post_init__(self):
         self.keys = set(self.trigger.split('+'))
-        self.press_executed = False
-
-    def notify_release(self, key):
-        if key in self.keys:
-            self.press_executed = False
 
 
 class KeyPool(NamedTuple):
@@ -62,7 +56,6 @@ def _handle_cycle(
     handlers: Dict[str, KeyHandler],
     handle_method_name: str,
 ):
-    # print(f'{handle_method_name} {active_keys}')
     handled = set()
 
     name: str
@@ -79,19 +72,8 @@ def _handle_cycle(
         )
 
         if triggered and all_unhandled:
-            method = getattr(handler, handle_method_name)
-
-            def execute():
-                with suppress(TypeError):
-                    method()
-
-            if handle_method_name == 'release':
-                execute()
-            elif handle_method_name == 'press':
-                if not handler.press_executed:
-                    execute()
-                    if not handler.repeat_on_hold:
-                        handler.press_executed = True
+            with suppress(TypeError):
+                getattr(handler, handle_method_name)()
 
             handled |= keys
 
@@ -165,10 +147,6 @@ class KeyboardWatcher:
         key_name = self._get_pressed_key(key)
 
         if key_name in self.pressed:
-            handler: KeyHandler
-            for handler in self._handlers.values():
-                handler.notify_release(key_name)
-
             self.pressed.remove(key_name)
             self.released.add(key_name)
 
