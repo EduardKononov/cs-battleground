@@ -85,8 +85,8 @@ class MyRobotController:
 
 
 def main():
-    # Тестирование управления роботом происходит локально, потому на это время вписывать localhost.
-    # Во время турнира, вместо localhost нужно написать IP адрес машины, на которой запущена CoppeliaSim
+    # Во время локального тестирование управления роботом вписывать localhost.
+    # Во время турнира, вместо localhost вписать IP адрес машины, на которой запущена CoppeliaSim
     # со сценой арены
     with coppelia_sim_connection('localhost'):
         # При входе в loaded_robot, на сцену CoppeliaSim будет загружена модель my_robot.
@@ -100,8 +100,13 @@ def main():
         #      Если НЕ ХОТИТЕ ЗАМОРАЧИВАТЬСЯ, то запускайте скрипт через терминал: обычный или в самой IDE
         with loaded_robot('my_robot.ttm'):
             controller = MyRobotController()
-            # В эту функцию нужно передать дескрипторы всех клавиш, что были определены.
-            # Она запустит бесконечный процесс считывания нажатий клавиатуры
+            # Функция ниже запускает бесконечный процесс управления роботом.
+            # В качестве аргументов принимает хендлеры клавиш.
+            # параметры определяют:
+            # * клавишу/комбинацию
+            # * действие на нажатие
+            # * дейстие на отжатие
+            # Для ЗАВЕРШЕНИЕ программы НАЖАТЬ CTRL+C в терминале (НЕ НУЖНО завершать через средства IDE)
             start_control_session([
                 KeyHandler('w+a', press=controller.turn_left),
                 KeyHandler('w+d', press=controller.turn_right),
@@ -111,13 +116,13 @@ def main():
                 KeyHandler('a', release=controller.stop),
                 KeyHandler('s', press=controller.backward, release=controller.stop),
                 KeyHandler('d', release=controller.stop),
+                # ускорение
                 KeyHandler(
                     trigger='k',
                     press=lambda: controller.set_scaler(3),
                     release=lambda: controller.set_scaler(1),
                 ),
             ])
-            # Для ЗАВЕРШЕНИЕ программы НАЖАТЬ CTRL+C в терминале (НЕ НУЖНО завершать через средства IDE)
 
 
 if __name__ == '__main__':
