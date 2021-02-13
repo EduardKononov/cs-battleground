@@ -1,9 +1,10 @@
 from cs_battleground.remote_api.coppelia_sim_connection import client
+from cs_battleground.wrappers.sim_base import SimBase
 
 __all__ = ['Joint']
 
 
-class Joint:
+class Joint(SimBase):
     def __init__(self, joint_name, scaler=1):
         """
         Обертка над объектом joint для упрощения базовых операций
@@ -11,11 +12,9 @@ class Joint:
         :param joint_name: имя joint'а (прямо из CoppeliaSim)
         :param scaler: значение, на которое умножается каждое выставляемое velocity
         """
-        joint_handler = client().simxGetObjectHandle(joint_name, client().simxServiceCall())
+        super(Joint, self).__init__(joint_name)
 
-        self.handler = joint_handler
-
-        self._velocity = client().simxGetJointTargetVelocity(self.handler, client().simxServiceCall())
+        self._velocity = client().simxGetJointTargetVelocity(self.handle, client().simxServiceCall())
         self.scaler = scaler
 
     @property
@@ -27,5 +26,5 @@ class Joint:
         new_velocity = self.scaler * velocity
 
         if self.velocity != new_velocity:
-            client().simxSetJointTargetVelocity(self.handler, new_velocity, client().simxDefaultPublisher())
+            client().simxSetJointTargetVelocity(self.handle, new_velocity, client().simxDefaultPublisher())
             self._velocity = new_velocity
