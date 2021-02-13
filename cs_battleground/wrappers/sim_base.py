@@ -4,6 +4,8 @@ from cs_battleground.remote_api import client, sim
 
 Orientation = Tuple[float, float, float]
 
+__all__ = ['SimBase']
+
 
 class OrientationMixin:
     @staticmethod
@@ -45,7 +47,5 @@ class OrientationMixin:
 
 class SimBase(OrientationMixin):
     def __init__(self, name: str):
-        c = client()
-
         self.name = name
-        self.handle = c.simxGetObjectHandle(name, client().simxServiceCall())
+        self.handle = client().simxGetObjectHandle(name, client().simxServiceCall())
