@@ -7,7 +7,11 @@ Orientation = Tuple[float, float, float]
 __all__ = ['SimBase']
 
 
-class OrientationMixin:
+class SimBase:
+    def __init__(self, name: str):
+        self.name = name
+        self.handle = client().simxGetObjectHandle(name, client().simxServiceCall())
+
     @staticmethod
     def _relative_to(parent: bool = None, absolute: bool = None, obj_handler: int = None):
         if parent:
@@ -43,9 +47,3 @@ class OrientationMixin:
             orientation,
             client().simxDefaultPublisher(),
         )
-
-
-class SimBase(OrientationMixin):
-    def __init__(self, name: str):
-        self.name = name
-        self.handle = client().simxGetObjectHandle(name, client().simxServiceCall())
