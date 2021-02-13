@@ -3,6 +3,10 @@ import struct
 import sys
 import os
 import ctypes as ct
+from pathlib import Path
+
+from enterdir import EnterDir
+
 
 libb0 = None
 prefix, suffix = 'lib', '.so'
@@ -10,12 +14,13 @@ if platform.system() in ('cli', 'Windows'):
     prefix, suffix = '', '.dll'
 if platform.system() in ('Darwin',):
     suffix = '.dylib'
-for path in ('.', 'build', '../../build'):
+for path in ('bin',):
     fullpath = os.path.join(os.path.dirname(__file__), path)
     if not os.path.isdir(fullpath): continue
     libb0_fullpath = os.path.join(fullpath, '%sb0%s' % (prefix, suffix))
     if os.path.exists(libb0_fullpath):
-        libb0 = ct.CDLL(libb0_fullpath)
+        with EnterDir(Path(__file__).parent / 'bin'):
+            libb0 = ct.CDLL(libb0_fullpath, winmode=0)
         break
 if libb0 is None:
     raise RuntimeError('%sb0%s not found' % (prefix, suffix))
