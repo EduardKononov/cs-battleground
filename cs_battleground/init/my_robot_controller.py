@@ -36,18 +36,12 @@ from cs_battleground.remote_api import (
     #   (https://www.coppeliarobotics.com/helpFiles/en/b0RemoteApi-python.htm#simxLoadModelFromFile)
     #   то вернется только один объект: item2.
 )
-from cs_battleground.robot_controller import RobotController
+from cs_battleground.robot_controller import start_control_session
 from cs_battleground.keyboard_whatcher import KeyHandler
 from cs_battleground.wrappers import Joint
 
 
-class MyRobotController(RobotController):
-    """
-    RobotController -- базовый класс для всех кастомных контроллеров.
-    Контроллер определяет действия робота в ответ на нажатие клавиш клавиатуры
-    и запускает сессию управления.
-    """
-
+class MyRobotController:
     def __init__(self):
         super(MyRobotController, self).__init__()
 
@@ -55,49 +49,35 @@ class MyRobotController(RobotController):
         self.right_joint = Joint('Pioneer_p3dx_rightMotor')
         self.left_joint = Joint('Pioneer_p3dx_leftMotor')
 
-    # ОБЯЗАТЕЛЬНЫЕ МЕТОДЫ: начало
-
     def forward(self):
-        """Обработчик нажатия W"""
         self.left_joint.velocity = 1
         self.right_joint.velocity = 1
 
     def backward(self):
-        """Обработчик нажатия S"""
         self.left_joint.velocity = -1
         self.right_joint.velocity = -1
 
     def stop(self):
-        """Данный метод должен переводить робота в состояние покоя"""
         self.left_joint.velocity = 0
         self.right_joint.velocity = 0
 
     def turn_right(self):
-        """Обработчик нажатия W+D"""
         # P.S. Все повороты данного двухколесного робота осуществляются
         # за счет выставления разной скорости вращения моторов
         self.left_joint.velocity = 1.5
         self.right_joint.velocity = 0.5
 
     def turn_left(self):
-        """Обработчик нажатия W+A"""
         self.left_joint.velocity = 0.5
         self.right_joint.velocity = 1.5
 
     def backward_turn_right(self):
-        """Обработчик нажатия S+D"""
         self.left_joint.velocity = -1.5
         self.right_joint.velocity = -0.5
 
     def backward_turn_left(self):
-        """Обработчик нажатия S+A"""
         self.left_joint.velocity = -0.5
         self.right_joint.velocity = -1.5
-
-    # ОБЯЗАТЕЛЬНЫЕ МЕТОДЫ: конец
-    # После определения перечисленных выше методов,
-    # можно определять любое количество других,
-    # необходимых именно вашему роботу.
 
     def set_scaler(self, value):
         self.left_joint.scaler = value
@@ -120,17 +100,22 @@ def main():
         #      Если НЕ ХОТИТЕ ЗАМОРАЧИВАТЬСЯ, то запускайте скрипт через терминал: обычный или в самой IDE
         with loaded_robot('my_robot.ttm'):
             controller = MyRobotController()
-            # Описание действия при нажатии клавиши;
-            # см. документацию класса в исходниках (зажать ctrl и кликнуть по классу)
-            speedup = KeyHandler(
-                trigger='k',
-                press=lambda: controller.set_scaler(3),
-                release=lambda: controller.set_scaler(1),
-            )
             # В эту функцию нужно передать дескрипторы всех клавиш, что были определены.
             # Она запустит бесконечный процесс считывания нажатий клавиатуры
-            controller.start_control_session([
-                speedup,
+            start_control_session([
+                KeyHandler('w+a', press=controller.turn_left),
+                KeyHandler('w+d', press=controller.turn_right),
+                KeyHandler('s+a', press=controller.backward_turn_left),
+                KeyHandler('s+d', press=controller.backward_turn_right),
+                KeyHandler('w', press=controller.forward, release=controller.stop),
+                KeyHandler('a', release=controller.stop),
+                KeyHandler('s', press=controller.backward, release=controller.stop),
+                KeyHandler('d', release=controller.stop),
+                KeyHandler(
+                    trigger='k',
+                    press=lambda: controller.set_scaler(3),
+                    release=lambda: controller.set_scaler(1),
+                ),
             ])
             # Для ЗАВЕРШЕНИЕ программы НАЖАТЬ CTRL+C в терминале (НЕ НУЖНО завершать через средства IDE)
 
