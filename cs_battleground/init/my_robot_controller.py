@@ -37,7 +37,7 @@ from cs_battleground.remote_api import (
     #   то вернется только один объект: item2.
 )
 from cs_battleground.robot_controller import RobotController
-from cs_battleground.keyboard_whatcher import KeyDescriptor
+from cs_battleground.keyboard_whatcher import KeyHandler
 from cs_battleground.wrappers import Joint
 
 
@@ -122,8 +122,8 @@ def main():
             controller = MyRobotController()
             # Описание действия при нажатии клавиши;
             # см. документацию класса в исходниках (зажать ctrl и кликнуть по классу)
-            speedup = KeyDescriptor(
-                key='k',
+            speedup = KeyHandler(
+                trigger='k',
                 press=lambda: controller.set_scaler(3),
                 release=lambda: controller.set_scaler(1),
             )

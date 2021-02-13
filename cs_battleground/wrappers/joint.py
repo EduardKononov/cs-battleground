@@ -28,3 +28,4 @@ class Joint(SimBase):
         if self.velocity != new_velocity:
             client().simxSetJointTargetVelocity(self.handle, new_velocity, client().simxDefaultPublisher())
             self._velocity = new_velocity
+            print(self._velocity)
