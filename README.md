@@ -2,9 +2,9 @@
 
 1. `$ python -m pip install git+https://gitlab.com/ekon-university/8_sem_labs/pis/battleground`
 2. `$ cd <your project dir>`
-3. `$ python -m cs_battleground.init`  
+3. `$ cs-battleground create-app APP-NAME`  
    или  
-   `$ python -m cs_battleground.init --no-comments`
+   `$ cs-battleground create-app APP-NAME --no-comments`
    чтобы получить файл без комментариев
 
 В рабочей директории будут созданы 3 файла:

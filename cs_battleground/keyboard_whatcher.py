@@ -31,6 +31,9 @@ class SafeSet(set):
         # if self.name == 'pressed':
         #     print(f'[{self.name}] remove {element} {self}')
 
+    def __str__(self):
+        return '+'.join(self)
+
 
 @dataclass
 class KeyHandler:
@@ -85,8 +88,9 @@ def infinite_handle_cycle(*args, **kwargs):
 
 
 class KeyboardWatcher:
-    def __init__(self, key_handlers: Sequence):
+    def __init__(self, key_handlers: Sequence, verbose: bool = False):
         self._pool = KeyPool()
+        self._verbose = verbose
 
         # sort them in order to give combinations precedence
         key_handlers = sorted(
@@ -143,6 +147,9 @@ class KeyboardWatcher:
         ):
             self.pressed.add(key_name)
 
+        if self._verbose:
+            print(f'pressed: {self.pressed}')
+
     def handle_release(self, key: KeyCode):
         key_name = self._get_pressed_key(key)
 
@@ -152,6 +159,9 @@ class KeyboardWatcher:
 
             _handle_cycle(self.released, self._handlers, 'release')
             self.released.remove(key_name)
+
+        if self._verbose:
+            print(f'released: {self.pressed}')
 
     def join(self):
         self._listener.join()

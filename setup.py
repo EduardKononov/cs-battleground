@@ -17,8 +17,15 @@ setuptools.setup(
     url='https://gitlab.com/ekon-university/8_sem_labs/pis/battleground',
     packages=setuptools.find_packages(),
     package_data={
-        'cs_battleground.remote_api': ['bin/*.so', 'bin/*.dll'],
-        'cs_battleground.init': ['*.ttm', '*.ttt'],
+        'cs_battleground.remote_api': [
+            'bin/*.so',
+            'bin/*.dll',
+        ],
+        'cs_battleground.cli': [
+            'template_dir/*.py',
+            'template_dir/*.ttm',
+            'template_dir/*.ttt',
+        ],
     },
     classifiers=[
         'Programming Language :: Python :: 3',
@@ -27,4 +34,9 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=required,
+    entry_points={
+        'console_scripts': [
+            'cs-battleground=cs_battleground.cli.__main__:main',
+        ],
+    },
 )
