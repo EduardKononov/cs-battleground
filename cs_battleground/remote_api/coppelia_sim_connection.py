@@ -56,6 +56,6 @@ def coppelia_sim_connection(ip):
 
         try:
             yield client
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, SystemExit):
             print('\n\nSIMULATION HAS BEEN STOPPED BY USER\n\n')
             exit(0)
