@@ -48,11 +48,21 @@ def client() -> b0RemoteApi.RemoteApiClient:
 
 
 @contextmanager
-def coppelia_sim_connection(ip):
+def coppelia_sim_connection(ip, allow_non_started: bool = False):
     with b0RemoteApi.RemoteApiClient() as client:
         os.environ['B0_RESOLVER'] = f'tcp://{ip}:22000'
         global _CLIENT
         _CLIENT = client
+
+        time1 = client.simxGetSimulationTime(client.simxServiceCall())
+        time2 = client.simxGetSimulationTime(client.simxServiceCall())
+        if time1 == time2 and not allow_non_started:
+            print(
+                'You have to run the simulation before trying to connect. Aborted.\n'
+                'P.S. If you want to allow connections to a non-started simulation, '
+                'pass `allow_non_started=True` to the coppelia_sim_connection'
+            )
+            exit(0)
 
         try:
             yield client
