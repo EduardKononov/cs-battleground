@@ -22,9 +22,8 @@ setuptools.setup(
             'bin/*.dll',
         ],
         'cs_battleground.cli': [
-            'template_dir/*.py',
-            'template_dir/*.ttm',
-            'template_dir/*.ttt',
+            'template_dir/**',
+            'template_dir/wrappers/**',
         ],
     },
     classifiers=[
