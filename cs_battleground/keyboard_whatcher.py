@@ -164,7 +164,8 @@ class KeyboardWatcher:
             print(f'released: {self.pressed}')
 
     def join(self):
-        self._listener.join()
+        while self._listener.is_alive():
+            self._listener.join(0.1)
 
     def __enter__(self):
         self._listener = Listener(
@@ -194,7 +195,10 @@ def main():
         dummy('k'),
         dummy('w'),
     ]) as handler:
-        handler.join()
+        try:
+            handler.join()
+        finally:
+            print('finally')
 
 
 if __name__ == '__main__':

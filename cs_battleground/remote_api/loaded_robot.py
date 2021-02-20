@@ -14,4 +14,4 @@ def loaded_robot(model_path: str):
     try:
         yield
     finally:
-        client().simxRemoveObjects([handle], 1, client().simxServiceCall())
+        client().simxRemoveObjects([handle], 1, client().simxDefaultPublisher())
