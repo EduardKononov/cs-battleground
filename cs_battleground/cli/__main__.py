@@ -1,7 +1,7 @@
 import os
 import re
 import shutil
-from tempfile import NamedTemporaryFile
+import tempfile
 from pathlib import Path
 from typing import Optional
 from contextlib import contextmanager
