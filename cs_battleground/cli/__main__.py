@@ -23,7 +23,7 @@ def keyboard_test():
 
 @contextmanager
 def clean(path, cleaners):
-    with path.open('r') as file:
+    with path.open('r', encoding='utf-8') as file:
         text = file.read()
 
     cleaned = text
