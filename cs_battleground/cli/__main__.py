@@ -45,9 +45,9 @@ def clean(path, cleaners):
             # Generate a random temporary file name
             file_name = os.path.join(tempfile.gettempdir(), os.urandom(24).hex())
             # Ensure the file is created
-            open(file_name, "x").close()
+            open(file_name, 'x', encoding='utf-8').close()
             # Open the file in the given mode
-            self._tempFile = open(file_name, self._mode)
+            self._tempFile = open(file_name, self._mode, encoding='utf-8')
             return self._tempFile
 
         def __exit__(self, exc_type, exc_val, exc_tb):
