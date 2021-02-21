@@ -10,9 +10,11 @@ from cs_battleground.keyboard_whatcher import KeyHandler
 from cs_battleground.cli.template_dir.wrappers import Joint
 
 
-def calc_rot_angle(leg_1, leg_2):
+def calc_rot_angle(leg_1: float, leg_2: float):
     """
-    Вычисление угла между гипотенузой и катетом_1
+    Вычисление угла между гипотенузой и катетом_1.
+    Используется для вычисления правильного угла поворота передних колес.
+
     :param leg_1: катет 1
     :param leg_2: катет 2
     :return:
@@ -23,12 +25,19 @@ def calc_rot_angle(leg_1, leg_2):
 class MyRobotController:
     def __init__(
         self,
-        length,
-        width,
-        rot_radius,
-        move_joint_target_velocity,
-        attack_joint_target_velocity,
+        length: float,
+        width: float,
+        rot_radius: float,
+        move_joint_target_velocity: float,
+        attack_joint_target_velocity: float,
     ):
+        """
+        :param length: длина машины (от центра заднего до центра переднего колеса)
+        :param width: ширина машины (от центра правого до центра левого колеса)
+        :param rot_radius: радиус поворота машины в метрах
+        :param move_joint_target_velocity: скорость езды
+        :param attack_joint_target_velocity: скорость выбрасывания ядер
+        """
         super(MyRobotController, self).__init__()
 
         self.length = length
@@ -54,7 +63,8 @@ class MyRobotController:
             joint.enable_control_loop()
         self.reset_wheels_rotation()
 
-        # робот имеет 4 "толкателя", работающих на призматических джоинтах
+        # робот имеет 4 снаряда, которые выбрасываются и
+        # возвращаются на место с помощью призматических джоинтов
         # f, r, l, b -- front, right, left, back
         self.f_prism_joint = Joint('f_prism_joint')
         self.r_prism_joint = Joint('r_prism_joint')
@@ -123,7 +133,7 @@ def main():
         # Если в модель вшит скрипт, то он запустится как обычно: на старте симуляции
         # При выходе из блока with модель будет АВТОМАТИЧЕСКИ УДАЛЕНА СО СЦЕНЫ
         # P.S. К сожалению, автомтическое удаление работает не всегда, из-за двух причин:
-        # * при попытке остановить программу, одна из зависимостей коппелии может выбросить исключение
+        # * при попытке остановить программу, одна из зависимостей Remote API коппелии может выбросить исключение
         #   и выполнение завершится экстренно, без очистки
         # * существует проблемы с многопоточностью и обработкой сигналов от операционной системы
         #   (нажатия клавиш считываются в отдельном потоке)
@@ -133,21 +143,16 @@ def main():
         #   Т.е. для очистки хватит перезапуска сцены
         with loaded_robot('robot.ttm'):
             controller = MyRobotController(
-                # просто линейкой в 3D редакторе измерил
-                # и width, и length считались от центра одного колеса до центра другого колеса
                 length=0.868005 / 2,
                 width=0.693387 / 2,
-                # в метрах
                 rot_radius=0.4,
-                # скорость езды
-                move_joint_target_velocity=4,
-                # скорость выбрасывания снарядов
-                attack_joint_target_velocity=5,
+                move_joint_target_velocity=4.,
+                attack_joint_target_velocity=5.,
             )
             # start_control_session запускает бесконечный процесс управления роботом.
             # В качестве аргументов принимает хендлеры клавиш.
-            # Параметры определяют:
-            # * клавишу/комбинацию
+            # Параметры хэндлера определяют:
+            # * клавишу/комбинацию ('w', 'w+a' и т.д.)
             #
             #       ! Если комбинация не работает, возможно, она передана в KeyHandler в неправильном виде.
             #       Выполните `cs-battleground keyboard-test` в терминале и нажмите нужную комбинацию.

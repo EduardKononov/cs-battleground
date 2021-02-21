@@ -1,6 +1,10 @@
+from typing import Union
+
 from cs_battleground.remote_api import (
+    # Модуль sim предоставляется самой коппелией. Макароны внутри -- не мое.
+    # Содержит различные константы, которые могут потребовать при работе с API
     sim,
-    # ctrl + click по методу, чтобы перейти к исходникам и почитать документацию
+    # ВАЖНАЯ ФУНКЦИЯ! ctrl + click по client, чтобы перейти к исходникам и почитать документацию
     client,
 )
 from cs_battleground.cli.template_dir.wrappers import SimObject
@@ -9,18 +13,16 @@ __all__ = ['Joint']
 
 
 class Joint(SimObject):
-    def __init__(self, joint_name, velocity_scaler=1):
+    def __init__(self, joint_name: str):
         """
         Обертка над объектом joint для упрощения базовых операций.
 
         :param joint_name: имя joint'а (прямо из CoppeliaSim)
-        :param velocity_scaler: значение, на которое умножается каждое выставляемое velocity
         """
         super(Joint, self).__init__(joint_name)
 
         self._target_velocity = client().simxGetJointTargetVelocity(self.handle, client().simxServiceCall())
         self._target_position = client().simxGetJointTargetPosition(self.handle, client().simxServiceCall())
-        self.velocity_scaler = velocity_scaler
 
     def _change_motor_state(self, enabled: int):
         client().simxSetObjectIntParameter(
@@ -36,7 +38,7 @@ class Joint(SimObject):
     def disable_motor(self):
         self._change_motor_state(0)
 
-    def _change_control_loop_state(self, enabled):
+    def _change_control_loop_state(self, enabled: int):
         client().simxSetObjectIntParameter(
             self.handle,
             sim.sim_jointintparam_ctrl_enabled,
@@ -55,7 +57,7 @@ class Joint(SimObject):
         return self._target_position
 
     @target_position.setter
-    def target_position(self, position):
+    def target_position(self, position: Union[int, float]):
         if self.target_position != position:
             client().simxSetJointTargetPosition(
                 self.handle,
@@ -69,23 +71,22 @@ class Joint(SimObject):
         return self._target_velocity
 
     @target_velocity.setter
-    def target_velocity(self, velocity):
-        new_velocity = self.velocity_scaler * velocity
+    def target_velocity(self, velocity: Union[int, float]):
 
-        if self.target_velocity != new_velocity:
+        if self.target_velocity != velocity:
             client().simxSetJointTargetVelocity(
                 self.handle,
-                new_velocity,
+                velocity,
                 client().simxDefaultPublisher()
             )
-            self._target_velocity = new_velocity
+            self._target_velocity = velocity
 
     @property
     def target_position(self):
         return self._target_position
 
     @target_position.setter
-    def target_position(self, radian_angle):
+    def target_position(self, radian_angle: Union[int, float]):
         if self.target_position != radian_angle:
             client().simxSetJointTargetPosition(
                 self.handle,
