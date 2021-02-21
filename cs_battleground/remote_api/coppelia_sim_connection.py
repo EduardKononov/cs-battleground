@@ -49,23 +49,33 @@ def client() -> b0RemoteApi.RemoteApiClient:
 
 @contextmanager
 def coppelia_sim_connection(ip, allow_non_started: bool = False):
-    with b0RemoteApi.RemoteApiClient() as client:
-        os.environ['B0_RESOLVER'] = f'tcp://{ip}:22000'
-        global _CLIENT
-        _CLIENT = client
+    os.environ['B0_RESOLVER'] = f'tcp://{ip}:22000'
+    try:
+        with b0RemoteApi.RemoteApiClient() as client:
+            global _CLIENT
+            _CLIENT = client
 
-        time1 = client.simxGetSimulationTime(client.simxServiceCall())
-        time2 = client.simxGetSimulationTime(client.simxServiceCall())
-        if time1 == time2 and not allow_non_started:
-            print(
-                'You have to run the simulation before trying to connect. Aborted.\n'
-                'P.S. If you want to allow connections to a non-started simulation, '
-                'pass `allow_non_started=True` to the coppelia_sim_connection'
+            time1 = client.simxGetSimulationTime(client.simxServiceCall())
+            time2 = client.simxGetSimulationTime(client.simxServiceCall())
+            if time1 == time2 and not allow_non_started:
+                print(
+                    'You have to run the simulation before trying to connect. Aborted.\n'
+                    'P.S. If you want to allow connections to a non-started simulation, '
+                    'pass `allow_non_started=True` to the coppelia_sim_connection'
+                )
+                exit(0)
+
+            try:
+                yield client
+            except (KeyboardInterrupt, SystemExit):
+                print('\n\nSIMULATION HAS BEEN STOPPED BY USER\n\n')
+                exit(0)
+    except ValueError as e:
+        msg = e.args[0]
+        if 'NULL pointer access' in msg:
+            raise RuntimeError(
+                'Скорее всего, на старте симуляции появилось окно с сообщением '
+                'про "custom simulation parameters". Закройте его и попробуйте подключиться еще раз. '
+                'Лучше поставить галочку на "не показывать снова"'
             )
-            exit(0)
-
-        try:
-            yield client
-        except (KeyboardInterrupt, SystemExit):
-            print('\n\nSIMULATION HAS BEEN STOPPED BY USER\n\n')
-            exit(0)
+        raise
