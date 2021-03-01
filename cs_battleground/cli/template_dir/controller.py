@@ -128,7 +128,7 @@ def main():
     # Сцену нужно ЗАПУСТИТЬ ПЕРЕД ПОПЫТКОЙ ПОДКЛЮЧИТЬСЯ
     # Если все же хочется иметь возможность подключиться к сцене до запуска, передайте в coppelia_sim_connection
     # `allow_non_started=True` в качестве аргумента.
-    with coppelia_sim_connection('localhost'):
+    with coppelia_sim_connection('localhost', allow_non_started=True):
         # При входе в loaded_robot, на сцену CoppeliaSim будет загружена модель my_robot.
         # Если в модель вшит скрипт, то он запустится как обычно: на старте симуляции
         # При выходе из блока with модель будет АВТОМАТИЧЕСКИ УДАЛЕНА СО СЦЕНЫ
@@ -146,7 +146,7 @@ def main():
                 length=0.868005 / 2,
                 width=0.693387 / 2,
                 rot_radius=0.4,
-                move_joint_target_velocity=7.,
+                move_joint_target_velocity=90,
                 attack_joint_target_velocity=5.,
             )
             # start_control_session запускает бесконечный процесс управления роботом.
