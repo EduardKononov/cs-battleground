@@ -37,6 +37,7 @@ def clean(path, cleaners):
         > Whether the name can be used to open the file a second time, while the named temporary file is still open,
         > varies across platforms (it can be so used on Unix; it cannot on Windows NT or later).
         """
+
         def __init__(self, mode='wb', delete=True):
             self._mode = mode
             self._delete = delete
@@ -102,6 +103,9 @@ def create_app(
                     shutil.copy(path, copy_to / path.name)
 
     rec_copy_dir(template_dir, project_dir)
+
+    battleground_file = Path(__file__).absolute().parent.parent / 'arena_files' / 'coppelia' / 'battleground.ttt'
+    shutil.copy(battleground_file, project_dir / 'battleground.ttt')
 
     print(f'New project has been successfully created:\n{project_dir.absolute()}')
 

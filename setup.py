@@ -25,6 +25,9 @@ setuptools.setup(
             'template_dir/**',
             'template_dir/wrappers/**',
         ],
+        'cs_battleground': [
+            'arena_files/coppelia/battleground.ttt',
+        ],
     },
     classifiers=[
         'Programming Language :: Python :: 3',
