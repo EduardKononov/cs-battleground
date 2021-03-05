@@ -1,5 +1,7 @@
 # Использование
 
+Требуется Python3.8
+
 1. `$ python -m pip install git+https://gitlab.com/ekon-university/8_sem_labs/pis/battleground`
 1. `$ cs-battleground create-app APP-NAME`  
    или  
@@ -11,7 +13,7 @@
 ```
 ├── controller.py
 ├── robot.ttm
-├── scene.ttt
+├── battleground.ttt
 └── wrappers
     ├── __init__.py
     ├── joint.py
@@ -20,9 +22,9 @@
 
 Для того, чтобы протестировать работоспособность пакета на вашей машине, необходимо:
 
-* Открыть в CoppeliaSim сцену `scene.ttt` и запустить ее (ctrl + p); да, она выглядит пустой, это нормально. В ней
-  расположен невидимый объект, с помощью которого возможна удаленная работа
+* Открыть в CoppeliaSim сцену `battleground.ttt` и запустить ее (ctrl + p)
 * `$ python controller.py` в терминале; ожидать надписи в духе "Connected"
+  P.S. Под Windows нужно запускать от имени администратора
 * Поместите в левую часть экрана окно CoppeliaSim, а в правую -- терминал с запущенным скриптом (win+стрелки)
 * Сделайте активным окно терминала.
 * Все готово к управлению. Используйте WASD для перемещения и IJKL для атаки.
