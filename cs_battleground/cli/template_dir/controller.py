@@ -146,7 +146,7 @@ def main():
                 length=0.868005 / 2,
                 width=0.693387 / 2,
                 rot_radius=0.4,
-                move_joint_target_velocity=90,
+                move_joint_target_velocity=130,
                 attack_joint_target_velocity=5.,
             )
             # start_control_session запускает бесконечный процесс управления роботом.
