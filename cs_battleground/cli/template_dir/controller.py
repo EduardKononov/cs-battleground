@@ -77,8 +77,8 @@ class MyRobotController:
             self.l_prism_joint,
             self.b_prism_joint,
         ):
-            joint.target_velocity = attack_joint_target_velocity
             joint.enable_motor()
+            joint.target_velocity = attack_joint_target_velocity
             joint.enable_control_loop()
             joint.target_position = 0
 
@@ -128,7 +128,7 @@ def main():
     # Сцену нужно ЗАПУСТИТЬ ПЕРЕД ПОПЫТКОЙ ПОДКЛЮЧИТЬСЯ
     # Если все же хочется иметь возможность подключиться к сцене до запуска, передайте в coppelia_sim_connection
     # `allow_non_started=True` в качестве аргумента.
-    with coppelia_sim_connection('localhost'):
+    with coppelia_sim_connection('localhost', allow_non_started=True):
         # При входе в loaded_robot, на сцену CoppeliaSim будет загружена модель my_robot.
         # Если в модель вшит скрипт, то он запустится как обычно: на старте симуляции
         # При выходе из блока with модель будет АВТОМАТИЧЕСКИ УДАЛЕНА СО СЦЕНЫ
@@ -143,11 +143,11 @@ def main():
         #   Т.е. для очистки хватит перезапуска сцены
         with loaded_robot('robot.ttm'):
             controller = MyRobotController(
-                length=0.868005 / 2,
-                width=0.693387 / 2,
+                length=0.740986,
+                width=0.598973,
                 rot_radius=0.4,
-                move_joint_target_velocity=130,
-                attack_joint_target_velocity=5.,
+                move_joint_target_velocity=70,
+                attack_joint_target_velocity=200,
             )
             # start_control_session запускает бесконечный процесс управления роботом.
             # В качестве аргументов принимает хендлеры клавиш.
