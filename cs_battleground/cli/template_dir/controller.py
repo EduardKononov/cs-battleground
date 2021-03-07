@@ -141,7 +141,7 @@ def main():
         #   Но! Поскольку по умолчанию можно подключиться к сцене можно только тогда, когда симуляция запущена,
         #   все загруженные модели будут удалены со сцены, когда симуляции остановится.
         #   Т.е. для очистки хватит перезапуска сцены
-        with loaded_robot('robot.ttm', 'demo_robot'):
+        with loaded_robot('robot.ttm', 'demo_robot', 'demo_team'):
             controller = MyRobotController(
                 length=0.740986,
                 width=0.598973,
