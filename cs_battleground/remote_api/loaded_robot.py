@@ -80,6 +80,7 @@ class Robot:
 def loaded_robot(
     model_path: str,
     robot_name: str,
+    team_name: str,
 ):
     c = client()
 
