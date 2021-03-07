@@ -27,6 +27,7 @@ setuptools.setup(
         ],
         'cs_battleground': [
             'arena_files/coppelia/battleground.ttt',
+            'arena_files/coppelia/robot.ttm',
         ],
     },
     classifiers=[
