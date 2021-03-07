@@ -48,7 +48,7 @@ def client() -> b0RemoteApi.RemoteApiClient:
 
 
 @contextmanager
-def coppelia_sim_connection(ip, allow_non_started: bool = False):
+def coppelia_sim_connection(ip, allow_non_started: bool = True):
     os.environ['B0_RESOLVER'] = f'tcp://{ip}:22000'
     try:
         with b0RemoteApi.RemoteApiClient() as client:
