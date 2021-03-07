@@ -131,6 +131,7 @@ def main():
         # При выходе из блока with модель будет АВТОМАТИЧЕСКИ УДАЛЕНА СО СЦЕНЫ
         # P.S. К сожалению, автомтическое удаление работает не всегда,
         #   т.к. при попытке остановить программу, одна из зависимостей Remote API коппелии может выбросить исключение
+        #   (terminate called after throwing an instance of 'zmq::error_t' ...)
         #   и выполнение завершится экстренно, без очистки
         with loaded_robot('robot.ttm', 'demo_robot', 'demo_team'):
             controller = MyRobotController(
