@@ -77,8 +77,8 @@ class MyRobotController:
             self.l_prism_joint,
             self.b_prism_joint,
         ):
-            joint.target_velocity = attack_joint_target_velocity
             joint.enable_motor()
+            joint.target_velocity = attack_joint_target_velocity
             joint.enable_control_loop()
             joint.target_position = 0
 
@@ -141,13 +141,13 @@ def main():
         #   Но! Поскольку по умолчанию можно подключиться к сцене можно только тогда, когда симуляция запущена,
         #   все загруженные модели будут удалены со сцены, когда симуляции остановится.
         #   Т.е. для очистки хватит перезапуска сцены
-        with loaded_robot('robot.ttm'):
+        with loaded_robot('robot.ttm', 'demo_robot'):
             controller = MyRobotController(
-                length=0.868005 / 2,
-                width=0.693387 / 2,
+                length=0.740986,
+                width=0.598973,
                 rot_radius=0.4,
-                move_joint_target_velocity=130,
-                attack_joint_target_velocity=5.,
+                move_joint_target_velocity=70,
+                attack_joint_target_velocity=200,
             )
             # start_control_session запускает бесконечный процесс управления роботом.
             # В качестве аргументов принимает хендлеры клавиш.

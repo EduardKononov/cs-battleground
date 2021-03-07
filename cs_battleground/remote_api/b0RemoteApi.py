@@ -12,6 +12,7 @@ from functools import wraps
 import msgpack
 
 import cs_battleground.remote_api.b0 as b0
+from cs_battleground.remote_api import sim
 
 __all__ = ['RemoteApiClient']
 
@@ -93,6 +94,12 @@ class RemoteApiClient:
         for key, value in self._allDedicatedPublishers.items():
             value.cleanup()
         self._node.cleanup()
+
+    def simxSetObjectName(self, handle, name):
+        self.simxExecuteScriptString(
+            f'sim.setObjectName({handle}, "{name}")',
+            self.simxServiceCall(),
+        )
 
     def _pingCallback(self, msg):
         self._pongReceived = True
