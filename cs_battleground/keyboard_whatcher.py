@@ -114,6 +114,12 @@ class KeyboardWatcher:
         hold_thread = Thread(target=target, daemon=True)
         hold_thread.start()
 
+        self._listener = Listener(
+            on_press=self.handle_press,
+            on_release=self.handle_release,
+            # suppress=True,
+        )
+
     @property
     def pressed(self):
         return self._pool.pressed
@@ -168,17 +174,17 @@ class KeyboardWatcher:
             self._listener.join(0.1)
 
     def __enter__(self):
-        self._listener = Listener(
-            on_press=self.handle_press,
-            on_release=self.handle_release,
-            # suppress=True,
-        )
         self._listener.start()
         self._listener.wait()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._listener.stop()
+
+    def start(self):
+        self._listener.start()
+        while True:
+            time.sleep(0.1)
 
 
 def main():
@@ -189,16 +195,16 @@ def main():
             release=lambda: print(f'released {trigger}'),
         )
 
-    with KeyboardWatcher([
+    watcher = KeyboardWatcher([
         dummy('w+d'),
         dummy('d'),
         dummy('k'),
         dummy('w'),
-    ]) as handler:
-        try:
-            handler.join()
-        finally:
-            print('finally')
+    ])
+    try:
+        watcher.start()
+    finally:
+        print('finally')
 
 
 if __name__ == '__main__':

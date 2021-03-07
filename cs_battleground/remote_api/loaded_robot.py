@@ -45,7 +45,7 @@ class Robot:
         c = client()
         c.simxCallScriptFunction(
             f'move_to_dummy@positions',
-            sim.sim_scripttype_childscript,
+            sim.sim_scripttype_customizationscript,
             [self.handle, position.obj_name],
             c.simxServiceCall(),
         )
@@ -59,6 +59,8 @@ class Robot:
             except RuntimeError:
                 name += f'#{i}'
                 i += 1
+                if i > 10:
+                    raise
 
     name = property(None, name)
 

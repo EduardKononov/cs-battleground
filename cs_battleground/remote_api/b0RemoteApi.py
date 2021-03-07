@@ -96,10 +96,8 @@ class RemoteApiClient:
         self._node.cleanup()
 
     def simxSetObjectName(self, handle, name):
-        self.simxCallScriptFunction(
-            'setObjectName@help_functions',
-            sim.sim_scripttype_childscript,
-            [handle, name],
+        self.simxExecuteScriptString(
+            f'sim.setObjectName({handle}, "{name}")',
             self.simxServiceCall(),
         )
 
