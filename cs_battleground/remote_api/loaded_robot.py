@@ -41,10 +41,10 @@ class Robot:
             buffer = file.read()
         self.handle = client().simxLoadModelFromBuffer(buffer, client().simxServiceCall())
 
-    def move_to_position(self, position: Position):
+    def move_to_start_position(self, position: Position):
         c = client()
         c.simxCallScriptFunction(
-            f'move_to_dummy@positions',
+            f'move_to_start_position@positions',
             sim.sim_scripttype_customizationscript,
             [self.handle, position.obj_name],
             c.simxServiceCall(),
@@ -75,11 +75,6 @@ class Robot:
 
     parent = property(None, parent)
 
-    def copy_object_orientation(self, object_handle):
-        c = client()
-        obj_orientation = c.simxGetObjectOrientation(object_handle, -1, c.simxServiceCall())
-        c.simxSetObjectOrientation(self.handle, -1, obj_orientation, c.simxServiceCall())
-
 
 @contextmanager
 def loaded_robot(
@@ -102,8 +97,7 @@ def loaded_robot(
         raise RuntimeError('No available positions')
 
     robot = Robot(model_path)
-    robot.move_to_position(target_position)
-    robot.copy_object_orientation(target_position.handle)
+    robot.move_to_start_position(target_position)
     robot.name = robot_name
     robot.parent = target_position.handle
 
