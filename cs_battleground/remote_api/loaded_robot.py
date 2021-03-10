@@ -1,3 +1,5 @@
+import json
+
 from contextlib import contextmanager
 
 from cs_battleground.remote_api import client, sim
@@ -41,10 +43,13 @@ class Robot:
             buffer = file.read()
         self.handle = client().simxLoadModelFromBuffer(buffer, client().simxServiceCall())
 
-    def move_to_start_position(self, position: Position):
+        self.shapes = client().simxGetObjectsInTree(self.handle, sim.sim_object_shape_type, 0,
+                                                    client().simxServiceCall())
+
+    def move_to_position(self, position: Position):
         c = client()
         c.simxCallScriptFunction(
-            f'move_to_start_position@positions',
+            f'move_to_dummy@positions',
             sim.sim_scripttype_customizationscript,
             [self.handle, position.obj_name],
             c.simxServiceCall(),
@@ -75,12 +80,77 @@ class Robot:
 
     parent = property(None, parent)
 
+    def copy_object_orientation(self, object_handle):
+        c = client()
+        obj_orientation = c.simxGetObjectOrientation(object_handle, -1, c.simxServiceCall())
+        c.simxSetObjectOrientation(self.handle, -1, obj_orientation, c.simxServiceCall())
+
+    @property
+    def mass(self):
+        c = client()
+        return sum(
+            c.simxExecuteScriptString(f'sim.getShapeMassAndInertia({shape})', c.simxServiceCall())
+            for shape in self.shapes
+        )
+
+    @property
+    def length(self):
+        return client().simxGetModelLength(self.handle, client().simxServiceCall())
+
+    @property
+    def width(self):
+        return client().simxGetModelWidth(self.handle, client().simxServiceCall())
+
+    @property
+    def height(self):
+        return client().simxGetModelHeight(self.handle, client().simxServiceCall())
+
+    def check_size(self):
+        proper_bbox_size = client().simxCallScriptFunction(
+            'checkSize@restrictions_funcs',
+            sim.sim_scripttype_customizationscript,
+            [self.length, self.width, self.height],
+            client().simxServiceCall(),
+        )
+
+        if not proper_bbox_size:
+            limits = client().simxCallScriptFunction(
+                'getSizeLimits@restrictions_funcs',
+                sim.sim_scripttype_customizationscript,
+                [],
+                client().simxServiceCall(),
+            )
+
+            raise ValueError(
+                'Робот не прошел проверку размеров.\n'
+                f'Размер робота: {{\n'
+                f'\tlength: {self.length}, \n'
+                f'\twidth: {self.width}, \n'
+                f'\theight: {self.height}\n'
+                f'}}\n'
+                f'Границы размера: {json.dumps(limits, indent=4)}'
+            )
+
+    def check_mass(self):
+        mass = self.mass
+        min_, max_ = client().simxCallScriptFunction(
+            'getMassLimit@restrictions_funcs',
+            sim.sim_scripttype_customizationscript,
+            [],
+            client().simxServiceCall(),
+        )
+        if mass < min_ or mass > max_:
+            raise ValueError(
+                f'Робот не прошел проверку массы (масса: {mass}, пределы: [{min_}, {max_}])'
+            )
+
 
 @contextmanager
 def loaded_robot(
     model_path: str,
     robot_name: str,
     team_name: str,
+    ignore_restrictions: bool = False,
 ):
     c = client()
 
@@ -97,11 +167,15 @@ def loaded_robot(
         raise RuntimeError('No available positions')
 
     robot = Robot(model_path)
-    robot.move_to_start_position(target_position)
+    robot.move_to_position(target_position)
+    robot.copy_object_orientation(target_position.handle)
     robot.name = robot_name
     robot.parent = target_position.handle
 
     try:
+        if not ignore_restrictions:
+            robot.check_size()
+            robot.check_mass()
         yield
     finally:
         c.simxRemoveObjects([robot.handle], 1, c.simxDefaultPublisher())

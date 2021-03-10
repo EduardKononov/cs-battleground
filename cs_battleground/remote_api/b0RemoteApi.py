@@ -95,12 +95,6 @@ class RemoteApiClient:
             value.cleanup()
         self._node.cleanup()
 
-    def simxSetObjectName(self, handle, name):
-        self.simxExecuteScriptString(
-            f'sim.setObjectName({handle}, "{name}")',
-            self.simxServiceCall(),
-        )
-
     def _pingCallback(self, msg):
         self._pongReceived = True
 
@@ -141,6 +135,37 @@ class RemoteApiClient:
             self._allDedicatedPublishers[topic].publish(packedData)
         else:
             print('B0 Remote API error: invalid topic')
+
+    def simxSetObjectName(self, handle, name):
+        self.simxExecuteScriptString(
+            f'sim.setObjectName({handle}, "{name}")',
+            self.simxServiceCall(),
+        )
+
+    def _get_model_bbox_param(self, handle, name, topic):
+        min_ = self.simxGetObjectFloatParameter(
+            handle,
+            getattr(sim, f'sim_objfloatparam_modelbbox_min_{name}'),
+            topic,
+        )
+        max_ = self.simxGetObjectFloatParameter(
+            handle,
+            getattr(sim, f'sim_objfloatparam_modelbbox_max_{name}'),
+            topic,
+        )
+        return min_, max_
+
+    def simxGetModelLength(self, handle, topic):
+        min_x, max_x = self._get_model_bbox_param(handle, 'x', topic)
+        return max_x - min_x
+
+    def simxGetModelWidth(self, handle, topic):
+        min_y, max_y = self._get_model_bbox_param(handle, 'y', topic)
+        return max_y - min_y
+
+    def simxGetModelHeight(self, handle, topic):
+        min_z, max_z = self._get_model_bbox_param(handle, 'z', topic)
+        return max_z - min_z
 
     def simxDefaultPublisher(self):
         return self._defaultPublisherTopic
@@ -263,7 +288,17 @@ class RemoteApiClient:
         packedArg = msgpack.packb(arg)
         reqArgs = [funcAtObjName, scriptType, packedArg]
         funcName = 'CallScriptFunction'
-        return self._handleFunction(funcName, reqArgs, topic)
+        result = self._handleFunction(funcName, reqArgs, topic)
+
+        if isinstance(result[1], dict):
+            def to_str_if_needed(key):
+                if isinstance(key, bytes):
+                    return key.decode('utf-8')
+                return key
+
+            result[1] = dict(zip(map(to_str_if_needed, result[1].keys()), result[1].values()))
+
+        return result
 
     def simxGetObjectHandle(self, objectName, topic):
         reqArgs = [objectName]
