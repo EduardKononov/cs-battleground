@@ -1,3 +1,5 @@
+import json
+
 from contextlib import contextmanager
 
 from cs_battleground.remote_api import client, sim
@@ -80,12 +82,51 @@ class Robot:
         obj_orientation = c.simxGetObjectOrientation(object_handle, -1, c.simxServiceCall())
         c.simxSetObjectOrientation(self.handle, -1, obj_orientation, c.simxServiceCall())
 
+    @property
+    def length(self):
+        return client().simxGetModelLength(self.handle, client().simxServiceCall())
+
+    @property
+    def width(self):
+        return client().simxGetModelWidth(self.handle, client().simxServiceCall())
+
+    @property
+    def height(self):
+        return client().simxGetModelHeight(self.handle, client().simxServiceCall())
+
+    def check_size(self):
+        proper_bbox_size = client().simxCallScriptFunction(
+            'checkSize@restrictions_funcs',
+            sim.sim_scripttype_customizationscript,
+            [self.length, self.width, self.height],
+            client().simxServiceCall(),
+        )
+
+        if not proper_bbox_size:
+            limits = client().simxCallScriptFunction(
+                'getSizeLimits@restrictions_funcs',
+                sim.sim_scripttype_customizationscript,
+                [],
+                client().simxServiceCall(),
+            )
+
+            raise ValueError(
+                'Робот не прошел проверку размеров.\n'
+                f'Размер робота: {{\n'
+                f'\tlength: {self.length}, \n'
+                f'\twidth: {self.width}, \n'
+                f'\theight: {self.height}\n'
+                f'}}\n'
+                f'Границы размера: {json.dumps(limits, indent=4)}'
+            )
+
 
 @contextmanager
 def loaded_robot(
     model_path: str,
     robot_name: str,
     team_name: str,
+    ignore_restrictions: bool = False,
 ):
     c = client()
 
@@ -108,6 +149,8 @@ def loaded_robot(
     robot.parent = target_position.handle
 
     try:
+        if not ignore_restrictions:
+            robot.check_size()
         yield
     finally:
         c.simxRemoveObjects([robot.handle], 1, c.simxDefaultPublisher())
