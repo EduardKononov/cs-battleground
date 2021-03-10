@@ -75,11 +75,17 @@ class Robot:
 
     parent = property(None, parent)
 
+    def copy_object_orientation(self, object_handle):
+        c = client()
+        obj_orientation = c.simxGetObjectOrientation(object_handle, -1, c.simxServiceCall())
+        c.simxSetObjectOrientation(self.handle, -1, obj_orientation, c.simxServiceCall())
+
 
 @contextmanager
 def loaded_robot(
     model_path: str,
     robot_name: str,
+    team_name: str,
 ):
     c = client()
 
@@ -97,6 +103,7 @@ def loaded_robot(
 
     robot = Robot(model_path)
     robot.move_to_position(target_position)
+    robot.copy_object_orientation(target_position.handle)
     robot.name = robot_name
     robot.parent = target_position.handle
 

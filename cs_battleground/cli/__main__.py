@@ -104,8 +104,12 @@ def create_app(
 
     rec_copy_dir(template_dir, project_dir)
 
-    battleground_file = Path(__file__).absolute().parent.parent / 'arena_files' / 'coppelia' / 'battleground.ttt'
-    shutil.copy(battleground_file, project_dir / 'battleground.ttt')
+    coppelia_dir = Path(__file__).absolute().parent.parent / 'arena_files' / 'coppelia'
+    for file in (
+        'battleground.ttt',
+        'robot.ttm',
+    ):
+        shutil.copy(coppelia_dir / file, project_dir / file)
 
     print(f'New project has been successfully created:\n{project_dir.absolute()}')
 

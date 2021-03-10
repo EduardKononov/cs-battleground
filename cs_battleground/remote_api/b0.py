@@ -7,7 +7,6 @@ from pathlib import Path
 
 from enterdir import EnterDir
 
-
 libb0 = None
 prefix, suffix = 'lib', '.so'
 if platform.system() in ('cli', 'Windows'):
@@ -19,7 +18,9 @@ for path in ('bin',):
     if not os.path.isdir(fullpath): continue
     libb0_fullpath = os.path.join(fullpath, '%sb0%s' % (prefix, suffix))
     if os.path.exists(libb0_fullpath):
-        with EnterDir(Path(__file__).parent / 'bin'):
+        bin_dir = os.environ.get('COPPELIA_DIR')
+        bin_dir = bin_dir or Path(__file__).parent / 'bin'
+        with EnterDir(bin_dir):
             libb0 = ct.CDLL(libb0_fullpath, winmode=0)
         break
 if libb0 is None:
