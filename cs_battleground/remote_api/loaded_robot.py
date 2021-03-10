@@ -43,6 +43,9 @@ class Robot:
             buffer = file.read()
         self.handle = client().simxLoadModelFromBuffer(buffer, client().simxServiceCall())
 
+        self.shapes = client().simxGetObjectsInTree(self.handle, sim.sim_object_shape_type, 0,
+                                                    client().simxServiceCall())
+
     def move_to_position(self, position: Position):
         c = client()
         c.simxCallScriptFunction(
@@ -83,6 +86,14 @@ class Robot:
         c.simxSetObjectOrientation(self.handle, -1, obj_orientation, c.simxServiceCall())
 
     @property
+    def mass(self):
+        c = client()
+        return sum(
+            c.simxExecuteScriptString(f'sim.getShapeMassAndInertia({shape})', c.simxServiceCall())
+            for shape in self.shapes
+        )
+
+    @property
     def length(self):
         return client().simxGetModelLength(self.handle, client().simxServiceCall())
 
@@ -120,6 +131,19 @@ class Robot:
                 f'Границы размера: {json.dumps(limits, indent=4)}'
             )
 
+    def check_mass(self):
+        mass = self.mass
+        min_, max_ = client().simxCallScriptFunction(
+            'getMassLimit@restrictions_funcs',
+            sim.sim_scripttype_customizationscript,
+            [],
+            client().simxServiceCall(),
+        )
+        if mass < min_ or mass > max_:
+            raise ValueError(
+                f'Робот не прошел проверку массы (масса: {mass}, пределы: [{min_}, {max_}])'
+            )
+
 
 @contextmanager
 def loaded_robot(
@@ -151,6 +175,7 @@ def loaded_robot(
     try:
         if not ignore_restrictions:
             robot.check_size()
+            robot.check_mass()
         yield
     finally:
         c.simxRemoveObjects([robot.handle], 1, c.simxDefaultPublisher())
