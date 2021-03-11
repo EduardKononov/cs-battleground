@@ -3,6 +3,7 @@ import json
 from contextlib import contextmanager
 
 from cs_battleground.remote_api import client, sim
+from cs_battleground.robot_objects_tree import RobotObjectsTree
 
 __all__ = ['loaded_robot']
 
@@ -43,8 +44,15 @@ class Robot:
             buffer = file.read()
         self.handle = client().simxLoadModelFromBuffer(buffer, client().simxServiceCall())
 
-        self.shapes = client().simxGetObjectsInTree(self.handle, sim.sim_object_shape_type, 0,
-                                                    client().simxServiceCall())
+        self.shapes = client().simxGetObjectsInTree(
+            self.handle,
+            sim.sim_object_shape_type,
+            0,
+            client().simxServiceCall(),
+        )
+
+        # init objects tree
+        RobotObjectsTree(self.handle)
 
     def move_to_start_position(self, position: Position):
         c = client()

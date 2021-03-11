@@ -1,4 +1,3 @@
-import time
 from typing import Sequence, Optional
 
 from cs_battleground.keyboard_whatcher import KeyboardWatcher, KeyHandler
