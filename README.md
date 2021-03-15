@@ -4,7 +4,7 @@ Attention:
 * Требуется Python3.8
 * Если вы работаете на Windows, cmd нужно запускать **от имени администратора**
 
-1. `$ python -m pip install git+https://gitlab.com/ekon-university/8_sem_labs/pis/battleground`
+1. `$ python -m pip install git+https://github.com/EduardKononov/cs-battleground`
 1. `$ cs-battleground create-app APP-NAME`  
    или  
    `$ cs-battleground create-app APP-NAME --no-comments`
