@@ -2,7 +2,8 @@ import json
 
 from contextlib import contextmanager
 
-from cs_battleground.remote_api import client, sim
+from cs_battleground.remote_api import client
+from cs_battleground.remote_api.official_coppellia_lib import sim
 from cs_battleground.robot_objects_tree import RobotObjectsTree
 
 __all__ = ['loaded_robot']

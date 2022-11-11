@@ -1,4 +1,5 @@
-from cs_battleground.remote_api import client, sim
+from cs_battleground.remote_api import client
+from cs_battleground.remote_api.official_coppellia_lib import sim
 
 
 class _SingletonMeta(type):
@@ -10,7 +11,7 @@ class _SingletonMeta(type):
         return cls._instances[cls]
 
 
-# we made it a singleton because the program can be used
+# we made it singleton because the program can be used
 # for controlling only one model at a time
 class RobotObjectsTree(metaclass=_SingletonMeta):
     def __init__(self, robot_base_handle: int = None):

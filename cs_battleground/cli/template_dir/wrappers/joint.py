@@ -1,12 +1,10 @@
 from typing import Union
 
-from cs_battleground.remote_api import (
-    # Модуль sim предоставляется самой коппелией. Макароны внутри -- не мое.
-    # Содержит различные константы, которые могут потребовать при работе с API
-    sim,
-    # ВАЖНАЯ ФУНКЦИЯ! ctrl + click по client, чтобы перейти к исходникам и почитать документацию
-    client,
-)
+# ВАЖНАЯ ФУНКЦИЯ! см. документацию
+from cs_battleground.remote_api import client
+# Модуль sim предоставляется самой коппелией. Макароны внутри -- не мое.
+# Содержит различные константы, которые могут потребовать при работе с API
+from cs_battleground.remote_api.official_coppellia_lib import sim
 from cs_battleground.cli.template_dir.wrappers import SimObject
 
 __all__ = ['Joint']

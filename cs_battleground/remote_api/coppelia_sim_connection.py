@@ -1,7 +1,7 @@
 import os
 from contextlib import contextmanager
 
-from cs_battleground.remote_api import b0RemoteApi
+from cs_battleground.remote_api.official_coppellia_lib import b0RemoteApi
 
 _CLIENT = None
 

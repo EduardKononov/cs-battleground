@@ -11,8 +11,8 @@ from functools import wraps
 
 import msgpack
 
-import cs_battleground.remote_api.b0 as b0
-from cs_battleground.remote_api import sim
+import cs_battleground.remote_api.official_coppellia_lib.b0 as b0
+from cs_battleground.remote_api.official_coppellia_lib import sim
 
 __all__ = ['RemoteApiClient']
 
